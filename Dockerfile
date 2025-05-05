@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM python:3.9-slim-buster
 WORKDIR /app
-COPY . .
-CMD ["python3", "-m", "http.server", "8080"]
+COPY . /app
+CMD ["python", "app.py"]
