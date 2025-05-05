@@ -1,0 +1,23 @@
+steps:
+  # Шаг 1: Сборка Docker-образа
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/deploy-from-github:$SHORT_SHA', '.']
+
+  # Шаг 2: Загрузка Docker-образа в Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/deploy-from-github:$SHORT_SHA']
+
+  # Шаг 3: Развертывание в Cloud Run
+  - name: 'gcr.io/google-cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'deploy-from-github' # Имя вашего сервиса Cloud Run
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/deploy-from-github:$SHORT_SHA'
+      - '--region'
+      - 'europe-west3'
+      - '--platform'
+      - 'managed'
+    waitFor: ['-'] # Дождитесь завершения предыдущих шагов
